@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>心理学AI互动课堂</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .question { font-weight: bold; margin-bottom: 10px; }
+        .option { margin: 10px 0; }
+        button { padding: 10px 20px; font-size: 16px; margin-top: 10px; }
+        .result { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="question" id="question">加载中...</div>
+        <div id="options"></div>
+        <div class="result" id="result"></div>
+        <button onclick="loadQuestion()">下一题</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                type: "结构判断题",
+                text: "学生在考试前总是感到紧张和焦虑，这属于以下哪种心理结构？",
+                options: ["心理过程", "心理倾向", "心理特征"],
+                answer: "心理过程",
+                feedback: "✅ 正确！紧张和焦虑是短暂的情绪体验，属于心理过程。"
+            },
+            {
+                type: "结构判断题",
+                text: "某学生总是主动参与活动，喜欢帮助同学，这属于哪种心理结构？",
+                options: ["心理过程", "心理倾向", "心理特征"],
+                answer: "心理倾向",
+                feedback: "✅ 正确！这种稳定的态度和行为偏好属于心理倾向。"
+            },
+            {
+                type: "概念配对题",
+                text: "“心理学主要研究什么？”请选择最贴切的回答。",
+                options: ["身体活动", "人的心理现象及其规律", "占星术"],
+                answer: "人的心理现象及其规律",
+                feedback: "✅ 正确！心理学是研究人的心理现象及其规律的科学。"
+            },
+            {
+                type: "心理与教育关系",
+                text: "教师如何通过心理学知识来帮助注意力不集中的学生？",
+                options: ["增加作业量", "加强惩罚", "制定个性化教学方案"],
+                answer: "制定个性化教学方案",
+                feedback: "✅ 正确！因材施教正是心理学对教育实践的重要贡献。"
+            },
+            {
+                type: "辩论情境题",
+                text: "你认为心理是由先天决定还是后天环境塑造？请选择更科学的表述。",
+                options: ["完全由大脑决定", "完全由社会环境决定", "心理是脑的机能，又是对客观现实的反映"],
+                answer: "心理是脑的机能，又是对客观现实的反映",
+                feedback: "✅ 正确！心理的本质包括脑的机能和对客观现实的反映两个方面。"
+            }
+        ];
+
+        function loadQuestion() {
+            const q = questions[Math.floor(Math.random() * questions.length)];
+            document.getElementById("question").innerText = `[${q.type}] ` + q.text;
+            const optionsDiv = document.getElementById("options");
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerText = '';
+            optionsDiv.innerHTML = '';
+            q.options.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === q.answer) {
+                        resultDiv.innerText = q.feedback;
+                    } else {
+                        resultDiv.innerText = `❌ 不正确。正确答案是：${q.answer}`;
+                    }
+                };
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
