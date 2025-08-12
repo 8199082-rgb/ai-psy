@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>心理学AI互动课堂</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .question { font-weight: bold; margin-bottom: 10px; }
+        .option { margin: 10px 0; }
+        input, button { padding: 8px; font-size: 16px; margin-top: 10px; width: 100%; }
+        .result { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>心理学AI互动答题</h2>
+        <input type="text" id="studentName" placeholder="请输入你的姓名或学号">
+        <div class="question" id="question">加载中...</div>
+        <div id="options"></div>
+        <div class="result" id="result"></div>
+        <button onclick="loadQuestion()">下一题</button>
+    </div>
+
+    <script type="module">
+        // Firebase 配置
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+        const firebaseConfig = {'apiKey': 'AIzaSyD4Mts_BIx2HcypwaSigHjTd4VxfD2w3_I', 'authDomain': 'psychology-ai-class.firebaseapp.com', 'projectId': 'psychology-ai-class', 'storageBucket': 'psychology-ai-class.firebasestorage.app', 'messagingSenderId': '922436918784', 'appId': '1:922436918784:web:b7c7c3949b2fdda8a142e5'};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const questions = [
+            {
+                type: "结构判断题",
+                text: "学生在考试前总是感到紧张和焦虑，这属于哪种心理结构？",
+                options: ["心理过程", "心理倾向", "心理特征"],
+                answer: "心理过程",
+                feedback: "✅ 正确！这是心理过程，表现为短暂的情绪体验。"
+            },
+            {
+                type: "概念配对题",
+                text: "心理学主要研究什么？",
+                options: ["占星术", "身体反应", "人的心理现象及其规律"],
+                answer: "人的心理现象及其规律",
+                feedback: "✅ 正确！心理学是研究人的心理现象及其规律的科学。"
+            },
+            {
+                type: "教育关系题",
+                text: "教师如何帮助注意力不集中的学生？",
+                options: ["增加惩罚", "个性化教学", "忽视"],
+                answer: "个性化教学",
+                feedback: "✅ 正确！体现心理与教育的互动关系。"
+            },
+            {
+                type: "辩论情境题",
+                text: "心理是由什么决定的？",
+                options: ["先天脑功能", "社会环境", "脑的机能+对现实的反映"],
+                answer: "脑的机能+对现实的反映",
+                feedback: "✅ 正确！心理本质包含生理和社会两个方面。"
+            }
+        ];
+
+        function loadQuestion() {
+            const q = questions[Math.floor(Math.random() * questions.length)];
+            document.getElementById("question").innerText = `[${q.type}] ` + q.text;
+            const optionsDiv = document.getElementById("options");
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerText = '';
+            optionsDiv.innerHTML = '';
+            q.options.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.innerText = opt;
+                btn.onclick = async () => {
+                    const studentName = document.getElementById("studentName").value.trim();
+                    if (!studentName) {
+                        alert("请先填写你的姓名或学号");
+                        return;
+                    }
+                    const correct = opt === q.answer;
+                    resultDiv.innerText = correct ? q.feedback : `❌ 不正确，正确答案是：${q.answer}`;
+                    await addDoc(collection(db, "answers"), {
+                        name: studentName,
+                        question: q.text,
+                        answer: opt,
+                        correct: correct,
+                        timestamp: new Date()
+                    });
+                };
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
